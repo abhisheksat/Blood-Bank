@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html ng-app="app" ng-controller="HttpGetController">
+<head>
+<meta charset="ISO-8859-1">
+<title>ITCS 6160 - Database Systems | Project Group 10</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<script>
+	var app = angular.module("app", []);
+	app.controller("HttpGetController", function($scope, $http) {
+
+		$scope.GetAllData = function() {
+			$http.get('http://localhost:8081/api/v1/getRequestDetailsForSampleKeeper')
+					.then(function(response) {
+						console.log(response.data);
+						$scope.Details = response.data;
+					});
+		};
+	});
+</script>
+</head>
+<body>
+
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/index.html">BLOOD BANK</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li><a href="/index.html">Home</a></li>
+				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sprint 2 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="/expiredSamples.html">Expired Samples</a></li>
+						<li><a href="/receptionistStock.html">Receptionist Stock</a></li>
+						<li><a href="/checkSamples.html">View Sample Requests</a></li>
+						<li><a href="/emergencyDonors.html">Emergency Donors</a></li>
+					</ul>
+				</li>
+				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sprint 3 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="/donorRecords.html">Donor Records</a></li>
+						<li><a href="/participationRecords.html">Drive Reports</a></li>
+						<li><a href="/rewardedDonors.html">Rewarded Donors</a></li>
+					</ul>
+				</li>
+				<li><a href="/page1.html">List of Samples</a></li>
+				<li><a href="/page2.html">Nurse Details</a></li>
+				<li><a href="/page3.html">Newest Blood Samples</a></li>
+				<li><a href="/page4.html">Blood Samples Count</a></li>
+			</ul>
+		</div>
+	</nav>
+	<div class="jumbotron text-center">
+		<h1>BLOOD BANK</h1>
+	</div>
+
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<h4>US8 : As a blood sample keeper, I want to check the details of the blood samples that the healthcare institutions requested, so that I can make the correct delivery.</h4>
+			<br />
+			<h4>Following table displays sample requests</h4>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+	<br />
+	<br />
+	
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-9">
+			<div>
+				SELECT r.request_id, r.blood_group, r.quantity, concat(h.first_name," ",h.last_name) as requester_name, h.healthcare_instution_name, h.phone_num FROM request r
+INNER JOIN healthcare_representative h ON r.requested_by_healthcare_representative = h.healthcare_representative_id WHERE r.status = 'Requested';
+				<br/><br />
+				View:<br />
+				CREATE VIEW Blood_sample_keeper_checks_requested__samples AS<br />
+				SELECT r.request_id, r.blood_group, r.quantity, concat(h.first_name,&quot; &quot;,h.last_name) as requester_name,<br />
+				h.healthcare_instution_name, h.phone_num FROM request r INNER JOIN<br />
+				healthcare_representative h ON<br />
+				r.requested_by_healthcare_representative = h.healthcare_representative_id WHERE r.status = 'Requested';<br /><br />
+				SELECT * FROM Blood_sample_keeper_checks_requested__samples;<br /><br />
+			</div>
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-5"></div>
+		<button class="btn btn-primary" ng-click="GetAllData()">GET DETAILS FOR SAMPLE REQUESTS</button>
+	</div>
+	<br />
+	<br />
+
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<div>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Request Id</th>
+							<th>Blood Group</th>
+							<th>Quantity</th>
+							<th>Requester Name</th>
+							<th>Healthcare Institution Name</th>
+							<th>Phone Number</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="d in Details">
+
+							<td>{{d.request_id}}</td>
+							<td>{{d.blood_group}}</td>
+							<td>{{d.quantity}}</td>
+							<td>{{d.requester_name}}</td>
+							<td>{{d.healthcare_institution_name}}</td>
+							<td>{{d.phone_number}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+</body>
+</html>

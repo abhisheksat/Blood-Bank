@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html ng-app="app" ng-controller="HttpGetController">
+<head>
+<meta charset="ISO-8859-1">
+<title>ITCS 6160 - Database Systems | Project Group 10</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<script>
+	var app = angular.module("app", []);
+	app.controller("HttpGetController", function($scope, $http) {
+		$scope.GetAllData = function() {
+			
+			var data = $.param({
+                bloodgroup: $scope.bloodgroup
+            });
+			
+			var config = {
+	        	headers : {
+	            	'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+				}
+			}
+			
+			$http.post('http://localhost:8081/api/v1/getSampleQuantityForReceptionist', data, config)
+				.then(function(response) {
+				console.log(response.data);
+				$scope.Details = response.data;
+			});
+		};
+
+	});
+</script>
+</head>
+<body>
+
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/index.html">BLOOD BANK</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li><a href="/index.html">Home</a></li>
+				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sprint 2 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="/expiredSamples.html">Expired Samples</a></li>
+						<li><a href="/receptionistStock.html">Receptionist Stock</a></li>
+						<li><a href="/checkSamples.html">View Sample Requests</a></li>
+						<li><a href="/emergencyDonors.html">Emergency Donors</a></li>
+					</ul>
+				</li>
+				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sprint 3 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="/donorRecords.html">Donor Records</a></li>
+						<li><a href="/participationRecords.html">Drive Reports</a></li>
+						<li><a href="/rewardedDonors.html">Rewarded Donors</a></li>
+					</ul>
+				</li>
+				<li><a href="/page1.html">List of Samples</a></li>
+				<li><a href="/page2.html">Nurse Details</a></li>
+				<li><a href="/page3.html">Newest Blood Samples</a></li>
+				<li><a href="/page4.html">Blood Samples Count</a></li>
+			</ul>
+		</div>
+	</nav>
+	<div class="jumbotron text-center">
+		<h1>BLOOD BANK</h1>
+	</div>
+
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<h4>US7 : As a receptionist, I want to check the quantity of a certain type of blood, so that I can tell the healthcare representatives whether we can meet the needs of them.</h4>
+			<br />
+			<h4>Following table displays quantity of samples for a specific blood group</h4>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+	<br />
+	<br />
+	
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-10">
+			<div>
+				SELECT s.blood_group, count(s.sample_id) as quantity FROM sample s WHERE s.status = 'Y' AND s.blood_group = '<input type="text" name="bloodgroup" ng-model="bloodgroup" required />';
+				
+				<br /><br />
+				Stored Procedure:<br />
+				DELIMITER $$<br />
+				CREATE PROCEDURE `Receptionst_checks_Blood` (IN Blood_grp VARCHAR(255))<br />
+				BEGIN<br />
+				SELECT s.blood_group, count(s.sample_id) as quantity FROM<br />
+				sample s WHERE s.status = &#39;Y&#39; AND s.blood_group = blood_grp;<br />
+				END$$<br />
+				DELIMITER ;<br /><br />
+				
+				Call Receptionst_checks_Blood '<input type="text" name="bloodgroup" ng-model="bloodgroup" required />';
+				<br /> <br />
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-5"></div>
+		<button class="btn btn-primary" ng-click="GetAllData()">GET SAMPLE QUANTITY FOR A BLOOD GROUP</button>
+	</div>
+	<br />
+	<br />
+
+	<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+			<div>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Blood Group</th>
+							<th>Quantity</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="d in Details">
+
+							<td>{{d.bloodGroup}}</td>
+							<td>{{d.quantity}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-md-4"></div>
+	</div>
+</body>
+</html>

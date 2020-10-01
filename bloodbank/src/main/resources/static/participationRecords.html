@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html ng-app="app" ng-controller="HttpGetController">
+<head>
+<meta charset="ISO-8859-1">
+<title>ITCS 6160 - Database Systems | Project Group 10</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<script>
+	var app = angular.module("app", []);
+	app.controller("HttpGetController", function($scope, $http) {
+
+		$scope.GetAllData = function() {
+			$http.get('http://localhost:8081/api/v1/participationRecords')
+					.then(function(response) {
+						console.log(response.data);
+						$scope.Details = response.data;
+					});
+		};
+	});
+</script>
+</head>
+<body>
+
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/index.html">BLOOD BANK</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li><a href="/index.html">Home</a></li>
+				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sprint 2 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="/expiredSamples.html">Expired Samples</a></li>
+						<li><a href="/receptionistStock.html">Receptionist Stock</a></li>
+						<li><a href="/checkSamples.html">View Sample Requests</a></li>
+						<li><a href="/emergencyDonors.html">Emergency Donors</a></li>
+					</ul>
+				</li>
+				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sprint 3 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="/donorRecords.html">Donor Records</a></li>
+						<li><a href="/participationRecords.html">Drive Reports</a></li>
+						<li><a href="/rewardedDonors.html">Rewarded Donors</a></li>
+					</ul>
+				</li>
+				<li><a href="/page1.html">List of Samples</a></li>
+				<li><a href="/page2.html">Nurse Details</a></li>
+				<li><a href="/page3.html">Newest Blood Samples</a></li>
+				<li><a href="/page4.html">Blood Samples Count</a></li>
+			</ul>
+		</div>
+	</nav>
+	<div class="jumbotron text-center">
+		<h1>BLOOD BANK</h1>
+	</div>
+
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<h4>US11 : As a Receptionist, I want to search for the number of participants of the drive from one specific address, so that we can set more drives where more donors are willing to go.</h4>
+			<br />
+			<h4>Following table displays sample requests</h4>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+	<br />
+	<br />
+	
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<div>
+				SELECT da.zip_code, CONCAT(da.address_line1, ', ', da.address_line2, ', ', da.city, ', ', da.state, ' - ',da.zip_code) AS location, COUNT(dd.donor_id) AS total_donors FROM donor_Drive dd INNER JOIN drive dr USING (drive_id) INNER JOIN drive_address da USING (address_id) GROUP BY da.zip_code;
+			</div>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+	<br />
+	<br />
+	<div class="row">
+		<div class="col-md-5"></div>
+		<button class="btn btn-primary" ng-click="GetAllData()">GET DETAILS FOR DONOR RECORDS</button>
+	</div>
+	<br />
+	<br />
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<div>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Zip Code</th>
+							<th>Address Location</th>
+							<th>Number of Donors</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="d in Details">
+						
+							<td>{{d.zip_code}}</td>
+							<td>{{d.location}}</td>
+							<td>{{d.total_donors}}</td>
+							
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+</body>
+</html>
